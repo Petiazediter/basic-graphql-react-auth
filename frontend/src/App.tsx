@@ -1,11 +1,16 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import { type Test } from '@basic-graphql-react-auth/utils'
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
-
+  const userTest: Test = {
+    userId: '123',
+    emailAddress: 'test@test.com'
+  }
+  
   return (
     <>
       <div>
@@ -22,6 +27,7 @@ function App() {
           count is {count}
         </button>
         <p>
+          { userTest.userId }, { userTest.emailAddress }
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
       </div>

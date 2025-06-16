@@ -10,6 +10,9 @@ importers:
 
   frontend:
     dependencies:
+      '@basic-graphql-react-auth/utils':
+        specifier: workspace:*
+        version: link:../packages/utils
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -50,6 +53,12 @@ importers:
       vite:
         specifier: ^6.3.5
         version: 6.3.5
+
+  packages/utils:
+    devDependencies:
+      typescript:
+        specifier: ~5.8.3
+        version: 5.8.3
 
 packages:
 
