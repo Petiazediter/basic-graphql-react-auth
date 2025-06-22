@@ -1,8 +1,8 @@
 import { Resolvers } from "@generated/graphql";
 import { UserRoleInOrganization } from "../../generated/prisma";
 import bcrypt from "bcrypt";
-import validator from "validator"
-import jwt from "jsonwebtoken";
+import validator from "validator";
+import { signJWTHeader } from "../jwt";
 
 export const typeDef = `
     extend type Query { 
@@ -90,11 +90,8 @@ export const resolvers: Resolvers = {
         },
       })
 
-      if ( createdUser && process.env.JWT_SECRET ) {
-        const token = jwt.sign({ 
-          userId: createdUser.id,
-        }, process.env.JWT_SECRET, { expiresIn: "10m" })
-
+      if ( createdUser ) {
+        const token = signJWTHeader({ userId: createdUser.id }, ctx.res);
         return token;
       }
 
@@ -124,12 +121,8 @@ export const resolvers: Resolvers = {
         throw new Error("User not found");
       }
 
-      if ( process.env.JWT_SECRET ) {
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "10m" });
-        return token;
-      }
-
-      throw new Error("User not found");
+      const token = signJWTHeader({ userId: user.id }, ctx.res);
+      return token;
     }
   }
 };
