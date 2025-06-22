@@ -16,7 +16,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "paths": {
-      "@generated/*": ["./src/generated/*"]
+      "@generated/*": ["./src/__generated__/*"]
     }
   },
   "include": ["src"],
