@@ -15,6 +15,9 @@
     "sourceMap": true,
     "outDir": "dist",
     "rootDir": "src",
+    "paths": {
+      "@generated/*": ["./src/generated/*"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
