@@ -14,10 +14,15 @@ const prismaClientInstance = new PrismaClient();
 
 async function main() {
     const app = express();
+    // Health check endpoint
+    app.get('/health', (req, res) => {
+        res.status(200).json({ status: 'healthy' });
+    });
+    
     const httpServer = http.createServer(app);
 
     app.use(cors({
-      origin: "http://localhost:3000",
+      origin: process.env.FRONTEND_URL || "http://localhost:3000",
       credentials: true,
     }));
 
@@ -40,8 +45,9 @@ async function main() {
 
     app.post('/refresh-token', refreshTokenPath);
 
-    await new Promise<void>(resolve => httpServer.listen({ port: 4000 }, resolve));
-    console.log(`🚀  Server ready at: http://localhost:4000/graphql`);
+    const port = process.env.PORT || 4000;
+    await new Promise<void>(resolve => httpServer.listen({ port }, resolve));
+    console.log(`🚀  Server ready at: http://localhost:${port}/graphql`);
 }
 
 main().then( 

@@ -210,6 +210,18 @@
         "isOneOf": null,
         "fields": [
           {
+            "name": "isUserAuthenticated",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "ok",
             "description": null,
             "args": [],

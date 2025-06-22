@@ -1,6 +1,9 @@
 import jwt from "jsonwebtoken";
 import express from "express";
 
+export const ACCESS_TOKEN_EXPIRATION_TIME = "10s";
+export const REFRESH_TOKEN_EXPIRATION_TIME = "1h";
+
 export type JWTToken = {
     userId: string;
 }
@@ -17,8 +20,8 @@ export const signAccessToken = (payload: JWTToken, res: express.Response): strin
     const isProduction = process.env.NODE_ENV === 'production';
     const sameSite = isProduction ? 'Strict' : 'None';
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "10m" });
-    const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION_TIME });
+    const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRATION_TIME });
     res.setHeader("Set-Cookie", [
         `jid=${refreshToken}; HttpOnly; Path=/refresh-token; SameSite=${sameSite}; Secure;`
     ]);

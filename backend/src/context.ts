@@ -1,6 +1,6 @@
 import { BaseContext } from "@apollo/server";
 import { PrismaClient } from "../generated/prisma"
-import { verifyJWTToken } from "./jwt";
+import { verifyAccessToken } from "./jwt";
 import { ExpressMiddlewareOptions } from "@as-integrations/express5";
 import express from "express";
 
@@ -16,8 +16,13 @@ const prismaClientInstance = new PrismaClient();
 export const options: ExpressMiddlewareOptions<Context> = {
     context: async ({ req, res }) => {
         const token = req.headers.authorization?.replace("Bearer ", "");
-        const userId = token ? verifyJWTToken(token)?.userId : undefined;
-    
+        let userId: string | undefined;
+        try {
+            userId = token ? verifyAccessToken(token)?.userId : undefined;
+        } catch (error) {
+            console.error(error);
+        }
+
         return {
             primsaClient: prismaClientInstance,
             userId,
