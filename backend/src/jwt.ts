@@ -37,3 +37,12 @@ export const verifyJWTToken = (token: string): JWTToken | null => {
 
     return decoded;
 }
+
+export const verifyRefreshToken = (token: string): boolean => {
+    if ( !process.env.JWT_SECRET ) {
+        throw new Error("Failed to verify refresh token");
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return isJWTToken(decoded);
+}

@@ -8,6 +8,7 @@ import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { schema } from "./api";
 import { Context, options } from "./context";
+import { refreshTokenPath } from "./api/refreshTokenRoute";
 
 const prismaClientInstance = new PrismaClient();
 
@@ -36,6 +37,8 @@ async function main() {
             context: options.context!,
         })
     )
+
+    app.post('/refresh-token', refreshTokenPath);
 
     await new Promise<void>(resolve => httpServer.listen({ port: 4000 }, resolve));
     console.log(`🚀  Server ready at: http://localhost:4000/graphql`);
