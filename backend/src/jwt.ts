@@ -9,8 +9,8 @@ const isJWTToken = (token: any): token is JWTToken => {
     return typeof token === "object" && token !== null && "userId" in token;
 }
 
-export const signJWTHeader = (payload: JWTToken, res: express.Response): string => {
-    if ( !process.env.JWT_SECRET ) {
+export const signAccessToken = (payload: JWTToken, res: express.Response): string => {
+    if ( !process.env.JWT_SECRET || !process.env.REFRESH_TOKEN_SECRET ) {
         throw new Error("Failed to sign JWT header");
     }
 
@@ -18,14 +18,14 @@ export const signJWTHeader = (payload: JWTToken, res: express.Response): string 
     const sameSite = isProduction ? 'Strict' : 'None';
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "10m" });
-    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "1h" });
     res.setHeader("Set-Cookie", [
         `jid=${refreshToken}; HttpOnly; Path=/refresh-token; SameSite=${sameSite}; Secure;`
     ]);
     return `Bearer ${token}`;
 }
 
-export const verifyJWTToken = (token: string): JWTToken | null => {
+export const verifyAccessToken = (token: string): JWTToken | null => {
     if ( !process.env.JWT_SECRET ) {
         throw new Error("Failed to verify JWT token");
     }
@@ -39,11 +39,11 @@ export const verifyJWTToken = (token: string): JWTToken | null => {
 }
 
 export const verifyRefreshToken = (token: string): JWTToken | null => {
-    if ( !process.env.JWT_SECRET ) {
+    if ( !process.env.REFRESH_TOKEN_SECRET ) {
         throw new Error("Failed to verify refresh token");
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
     if ( isJWTToken(decoded) ) {
         return decoded;
     }

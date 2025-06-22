@@ -1,6 +1,6 @@
 import { parse } from "cookie";
 import { RequestHandler } from "express";
-import { signJWTHeader, verifyRefreshToken } from "../jwt";
+import { signAccessToken, verifyRefreshToken } from "../jwt";
 
 export const refreshTokenPath: RequestHandler = async (req, res) => {
     let cookies = {}
@@ -18,7 +18,7 @@ export const refreshTokenPath: RequestHandler = async (req, res) => {
       const verifiedPayload = verifyRefreshToken(refreshToken as string);
       if ( verifiedPayload ) {
         // TODO: check if userId is valid, refresh token is valid etc..
-        const newAccessToken = signJWTHeader(verifiedPayload, res);
+        const newAccessToken = signAccessToken(verifiedPayload, res);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ accessToken: newAccessToken }));
       }

@@ -2,7 +2,7 @@ import { Resolvers } from "@generated/graphql";
 import { UserRoleInOrganization } from "../../generated/prisma";
 import bcrypt from "bcrypt";
 import validator from "validator";
-import { signJWTHeader } from "../jwt";
+import { signAccessToken } from "../jwt";
 
 export const typeDef = `
     extend type Query { 
@@ -91,7 +91,7 @@ export const resolvers: Resolvers = {
       })
 
       if ( createdUser ) {
-        const token = signJWTHeader({ userId: createdUser.id }, ctx.res);
+        const token = signAccessToken({ userId: createdUser.id }, ctx.res);
         return token;
       }
 
@@ -121,7 +121,7 @@ export const resolvers: Resolvers = {
         throw new Error("User not found");
       }
 
-      const token = signJWTHeader({ userId: user.id }, ctx.res);
+      const token = signAccessToken({ userId: user.id }, ctx.res);
       return token;
     }
   }
