@@ -4,13 +4,10 @@ import cors from "cors";
 import http from "http";
 import cookieParser from "cookie-parser";
 import { expressMiddleware, ExpressMiddlewareOptions } from "@apollo/server/express4";
-import { ApolloServer, BaseContext } from "@apollo/server";
+import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { schema } from "./api";
-
-type Context = {
-    prismaClient: PrismaClient;
-} & BaseContext
+import { Context, contextFn } from "./context";
 
 const prismaClientInstance = new PrismaClient();
 
@@ -31,9 +28,7 @@ async function main() {
     await server.start();
   
     const middleware: Required<Pick<ExpressMiddlewareOptions<Context>, "context">> = {
-        context: async ({ req, res }) => ({
-            prismaClient: prismaClientInstance
-        })
+        context: contextFn
     };
 
     app.use(
@@ -41,7 +36,7 @@ async function main() {
         cors<cors.CorsRequest>(),
         cookieParser(),
         express.json(),
-        // @ts-ignore
+        // @ts-ignore-next-line
         expressMiddleware(server, middleware)
     )
 
