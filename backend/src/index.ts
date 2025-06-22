@@ -3,11 +3,11 @@ import express from "express";
 import cors from "cors";
 import http from "http";
 import cookieParser from "cookie-parser";
-import { expressMiddleware, ExpressMiddlewareOptions } from "@apollo/server/express4";
+import { expressMiddleware } from "@as-integrations/express5"
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { schema } from "./api";
-import { Context, contextFn } from "./context";
+import { Context, options } from "./context";
 
 const prismaClientInstance = new PrismaClient();
 
@@ -26,18 +26,15 @@ async function main() {
     });
   
     await server.start();
-  
-    const middleware: Required<Pick<ExpressMiddlewareOptions<Context>, "context">> = {
-        context: contextFn
-    };
 
     app.use(
         '/graphql',
         cors<cors.CorsRequest>(),
         cookieParser(),
         express.json(),
-        // @ts-ignore-next-line
-        expressMiddleware(server, middleware)
+        expressMiddleware<Context>(server, {
+            context: options.context!,
+        })
     )
 
     await new Promise<void>(resolve => httpServer.listen({ port: 4000 }, resolve));
