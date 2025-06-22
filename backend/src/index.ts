@@ -1,5 +1,5 @@
 import { PrismaClient } from "../generated/prisma";
-import express, { Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import http from "http";
 import cookieParser from "cookie-parser";
@@ -8,11 +8,11 @@ import { ApolloServer, BaseContext } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { schema } from "./api";
 
-const prisma = new PrismaClient();
-
 type Context = {
-    asd: string;
+    prismaClient: PrismaClient;
 } & BaseContext
+
+const prismaClientInstance = new PrismaClient();
 
 async function main() {
     const app = express();
@@ -30,9 +30,9 @@ async function main() {
   
     await server.start();
   
-    const asd: Required<Pick<ExpressMiddlewareOptions<Context>, "context">> = {
+    const middleware: Required<Pick<ExpressMiddlewareOptions<Context>, "context">> = {
         context: async ({ req, res }) => ({
-            asd: "asd"
+            prismaClient: prismaClientInstance
         })
     };
 
@@ -42,7 +42,7 @@ async function main() {
         cookieParser(),
         express.json(),
         // @ts-ignore
-        expressMiddleware(server, asd)
+        expressMiddleware(server, middleware)
     )
 
     await new Promise<void>(resolve => httpServer.listen({ port: 4000 }, resolve));
@@ -51,10 +51,10 @@ async function main() {
 
 main().then( 
     async () => {
-        await prisma.$disconnect();
+        await prismaClientInstance.$connect();
     })
     .catch(async (e) => {
         console.error(e);
-        await prisma.$disconnect();
+        await prismaClientInstance.$disconnect();
         process.exit(1);
     });

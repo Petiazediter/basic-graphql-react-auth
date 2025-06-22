@@ -8,20 +8,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const files = fs.readdirSync(__dirname)
-    .filter((file) => file !== "index.ts" && file.endsWith(".ts"))
+    .filter((file) => file.endsWith(".graphql.ts"))
 
-const modules = files.map((file) => {
-    const modulePath = pathToFileURL(path.join(__dirname, file)).href;
-    const module = require(modulePath);
-    return module;
-});
+const modules = await Promise.all(
+    files.map(async (file) => {
+        const modulePath = pathToFileURL(path.join(__dirname, file)).href;
+        const module = await import(modulePath);
+        return module;
+    })
+);
 
 const typeDefsModules = modules.map((module) => module.typeDef);
 const resolversModules = _.merge(
     modules.map((module) => module.resolvers)
 )
 
-const typeDefs = [` 
+const typeDefs = [`
     schema {
         query: Query
         mutation: Mutation
