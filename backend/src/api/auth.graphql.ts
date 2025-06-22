@@ -24,8 +24,14 @@ export const typeDef = `
       userOrganization: UserOrganizationInput
     }
     
+    input LoginInput {
+      email: String!
+      password: String!
+    }
+    
     extend type Mutation {
       createUser(input: CreateUserInput!): String
+      login(input: LoginInput!): String
     }
 `;
 
@@ -91,8 +97,39 @@ export const resolvers: Resolvers = {
 
         return token;
       }
-      
+
       throw new Error("Failed to create user");
+    },
+    login: async (_parent, { input }, ctx) => {
+      const { email, password } = input;
+
+      const user = await ctx.primsaClient.user.findUnique({
+        where: {
+          email,
+        },
+        select: {
+          id: true,
+          password: true,
+        }
+      })
+
+      if ( !user ) {
+        // If user not found, compare the password with a hashed dummy password to avoid timing attacks
+        bcrypt.compareSync(password, "$2b$10$Ca/7HUvYywqMBZMDLj4lR.Av8YJYPDwlpZw4zwlL5VUzRp/0SDLeS");
+        throw new Error("User not found");
+      }
+
+      const isPasswordValid = bcrypt.compareSync(password, user.password);
+      if ( !isPasswordValid ) {
+        throw new Error("User not found");
+      }
+
+      if ( process.env.JWT_SECRET ) {
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "10m" });
+        return token;
+      }
+
+      throw new Error("User not found");
     }
   }
 };
