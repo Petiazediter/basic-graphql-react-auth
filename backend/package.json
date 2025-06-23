@@ -4,7 +4,9 @@
     "main": "src/index.ts",
     "type": "module",
     "scripts": {
-        "dev": "npx tsx watch src/index.ts",
+        "dev": "npx tsx --watch src/index.ts",
+        "dev:no-check": "npx tsx --tsconfig tsconfig.dev.json --watch src/index.ts",
+        "dev:setup": "pnpm codegen && pnpm dev",
         "codegen": "graphql-codegen --config graphql-codegen.ts"
     },
     "devDependencies": {
@@ -36,6 +38,7 @@
         "cookie": "^1.0.2",
         "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
+        "dotenv": "^16.5.0",
         "express": "^4.21.2",
         "graphql": "^16.11.0",
         "install": "^0.13.0",

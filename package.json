@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "frontend:dev": "pnpm --filter frontend dev",
     "backend:dev": "pnpm --filter backend dev",
-    "backend:codegen": "pnpm --filter backend codegen"
+    "backend:codegen": "pnpm --filter backend codegen",
+    "backend:no-check": "pnpm --filter backend dev:no-check"
   },
   "keywords": [],
   "author": "",
