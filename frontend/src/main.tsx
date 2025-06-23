@@ -5,7 +5,7 @@ import App from './App.tsx'
 import { ApolloClient, InMemoryCache, ApolloProvider, gql } from "@apollo/client";
 
 const apolloClient = new ApolloClient({
-  uri: 'https://flyby-router-demo.herokuapp.com/',
+  uri: 'http://localhost:4000/graphql',
   cache: new InMemoryCache(),
 });
 
