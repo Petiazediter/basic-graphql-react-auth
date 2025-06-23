@@ -3,18 +3,14 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import { type Test } from '@basic-graphql-react-auth/utils'
 import './App.css'
-import { gql, useQuery } from '@apollo/client'
-
-const HEALTH_CHECK_QUERY = gql`
-  query HealthCheck {
-    ok
-  }
-`
+import { useQuery } from '@apollo/client'
+import { HEALTH_CHECK_QUERY } from './App.graphql'
+import { type HealthCheckQuery, type HealthCheckQueryVariables } from './__generated__/App.graphql'
 
 function App() {
   const [count, setCount] = useState(0)
 
-  const { data, loading, error } = useQuery(HEALTH_CHECK_QUERY);
+  const { data, loading, error } = useQuery<HealthCheckQuery, HealthCheckQueryVariables>(HEALTH_CHECK_QUERY);
 
   const userTest: Test = {
     userId: '123',
