@@ -14,12 +14,67 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// The user is the main entity in the system.
+// A user can be a customer and a staff member.
+// Staff members are part of 1 or more organizations. ( many to many )
+// Staff members have a role in the organization.
+
 model User {
   id        String   @id @default(uuid())
+
+  // Authentication
   email     String   @unique
   password  String
+
+  // Staff fields
+  organizations UserOrganization[]
+  
+  // Audit fields 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+// Organization is a group of staff members.
+model Organization {
+  id String @id @default(uuid())
+
+  name String
+
+  // Relations
+  staffMembers UserOrganization[]
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("organizations")
+}
+
+
+// Many to many relation between User and Organization
+model UserOrganization {
+  userId String
+  organizationId String
+
+  user User @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  role UserRoleInOrganization @default(STAFF)
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, organizationId])
+  @@map("user_organizations")
+}
+
+// Users in an organization can have different roles.
+// ADMIN is the owner of the organization.
+// STAFF is a regular staff member of the organization.
+enum UserRoleInOrganization {
+  ADMIN
+  STAFF
 }
