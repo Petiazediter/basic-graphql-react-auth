@@ -8,7 +8,8 @@
     "frontend:dev": "pnpm --filter frontend dev",
     "backend:dev": "pnpm --filter backend dev",
     "backend:codegen": "pnpm --filter backend codegen",
-    "backend:no-check": "pnpm --filter backend dev:no-check"
+    "backend:no-check": "pnpm --filter backend dev:no-check",
+    "frontend:codegen": "pnpm --filter frontend codegen"
   },
   "keywords": [],
   "author": "",
