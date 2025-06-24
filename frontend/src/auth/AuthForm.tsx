@@ -1,5 +1,5 @@
-import { ApolloError, useApolloClient, useMutation, type FetchResult } from '@apollo/client';
-import { useCallback, useState } from 'react';
+import { ApolloError, useMutation, type FetchResult } from '@apollo/client';
+import { useState } from 'react';
 import { Controller, FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
 import { SIGN_IN_MUTATION, SIGN_UP_MUTATION } from './AuthForm.graphql';
 import { type AuthSignInMutation, type AuthSignInMutationVariables, type AuthSignUpMutation, type AuthSignUpMutationVariables } from './__generated__/AuthForm.graphql';
@@ -96,9 +96,14 @@ export const AuthForm = (props: Props) => {
     }
   }
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    form.handleSubmit(onSubmit)(e);
+  };
+
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '10px', border: '1px solid #ccc', padding: '15px', borderRadius: '8px'}}>
+      <form method="POST" onSubmit={handleFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '10px', border: '1px solid #ccc', padding: '15px', borderRadius: '8px'}}>
         <Controller control={form.control} 
           name='email'
           rules={{ required: true }}

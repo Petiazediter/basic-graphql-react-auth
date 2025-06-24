@@ -1,4 +1,5 @@
 import { Resolvers } from "@generated/graphql";
+import { GraphQLError } from "graphql";
 
 export const typeDef = `
     extend type Query { 
@@ -11,7 +12,14 @@ export const resolvers: Resolvers = {
   Query: {
     ok: () => true,
     isUserAuthenticated: async (_parent, _args, ctx) => {
-      return !!ctx.userId;
+      if (!ctx.userId) {
+        throw new GraphQLError("Unauthorized", {
+          extensions: {
+            code: 'UNAUTHORIZED'
+          }
+        });
+      }
+      return true;
     }
   },
 };
