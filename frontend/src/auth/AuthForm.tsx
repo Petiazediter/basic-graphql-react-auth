@@ -1,8 +1,9 @@
-import { ApolloError, useMutation, type FetchResult } from '@apollo/client';
+import { ApolloError, useApolloClient, useMutation, type FetchResult } from '@apollo/client';
 import { useCallback, useState } from 'react';
 import { Controller, FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
 import { SIGN_IN_MUTATION, SIGN_UP_MUTATION } from './AuthForm.graphql';
-import { AuthSignUpDocument, type AuthSignInMutation, type AuthSignInMutationVariables, type AuthSignUpMutation, type AuthSignUpMutationResult, type AuthSignUpMutationVariables } from './__generated__/AuthForm.graphql';
+import { type AuthSignInMutation, type AuthSignInMutationVariables, type AuthSignUpMutation, type AuthSignUpMutationVariables } from './__generated__/AuthForm.graphql';
+import { useAuth } from './useAuth';
 
 type InputForm = {
   email: string;
@@ -20,6 +21,7 @@ export const AuthForm = () => {
   });
 
   const [isRegister, setIsRegister] = useState(false);
+  const { login } = useAuth();
 
   const [signInMutation, { loading: isSignInMutationLoading }] = useMutation<AuthSignInMutation, AuthSignInMutationVariables>(SIGN_IN_MUTATION)
   const [signUpMutation, { loading: isSignUpMutationLoading }] = useMutation<AuthSignUpMutation, AuthSignUpMutationVariables>(SIGN_UP_MUTATION)
@@ -42,7 +44,7 @@ export const AuthForm = () => {
         if ( value && value.data ) {
           const token = valueData.data?.login;
           if ( token ) {
-            handleAuthSuccess(token);
+            login(token);
           } else {
             throw new Error('No token found');
           }
@@ -70,7 +72,7 @@ export const AuthForm = () => {
         if ( value && value.data ) {
           const token = valueData.data?.createUser;
           if ( token ) {
-            handleAuthSuccess(token);
+            login(token);
           } else {
             throw new Error('No token found');
           }
@@ -84,11 +86,6 @@ export const AuthForm = () => {
       })
     }
   }
-
-  const handleAuthSuccess = useCallback((token: string) => {
-    localStorage.setItem("accessToken", token);
-    console.log("Successfully logged in", token);
-  }, []);
 
   return (
     <FormProvider {...form}>

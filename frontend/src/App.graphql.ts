@@ -5,3 +5,9 @@ export const HEALTH_CHECK_QUERY = gql`
     ok
   }
 `
+
+export const IS_USER_AUTHENTICATED_QUERY = gql`
+  query IsUserAuthenticated {
+    isUserAuthenticated
+  }
+`

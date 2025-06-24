@@ -1,23 +1,16 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import { type Test } from '@basic-graphql-react-auth/utils'
 import './App.css'
 import { useQuery } from '@apollo/client'
-import { HEALTH_CHECK_QUERY } from './App.graphql'
-import { type HealthCheckQuery, type HealthCheckQueryVariables } from './__generated__/App.graphql'
+import { HEALTH_CHECK_QUERY, IS_USER_AUTHENTICATED_QUERY } from './App.graphql'
+import { type IsUserAuthenticatedQuery, type HealthCheckQuery, type HealthCheckQueryVariables } from './__generated__/App.graphql'
 import { AuthForm } from '@/auth/AuthForm'
+import { useAuth } from './auth/useAuth'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { isAuthenticated } = useAuth();
 
   const { data, loading, error } = useQuery<HealthCheckQuery, HealthCheckQueryVariables>(HEALTH_CHECK_QUERY);
-
-  const userTest: Test = {
-    userId: '123',
-    emailAddress: 'test@test.com'
-  }
-
+  const { data: isAuthenticatedData } = useQuery<IsUserAuthenticatedQuery>(IS_USER_AUTHENTICATED_QUERY);
+  
   if ( loading ) {
     return <div>Loading...</div>
   }
@@ -28,9 +21,10 @@ function App() {
   
   return (
     <>
-      <AuthForm />
+      { (!isAuthenticated || isAuthenticatedData?.isUserAuthenticated === false) && <AuthForm /> }
       <div>
         GRAPHQL HEALTH CHECK: { data.ok ? 'OK' : 'NOT OK' }
+        IS USER AUTHENTICATED: { isAuthenticatedData?.isUserAuthenticated ? 'YES' : 'NO' }
       </div>
     </>
   )
