@@ -11,7 +11,11 @@ type InputForm = {
   passwordConfirmation: string;
 }
 
-export const AuthForm = () => {
+type Props = {
+  onSuccess: () => void;
+}
+
+export const AuthForm = (props: Props) => {
   const form = useForm<InputForm>({
     defaultValues: {
       email: '',
@@ -45,6 +49,8 @@ export const AuthForm = () => {
           const token = valueData.data?.login;
           if ( token ) {
             login(token);
+            console.log("Successfully logged in", token);
+            props.onSuccess();
           } else {
             throw new Error('No token found');
           }
@@ -73,6 +79,9 @@ export const AuthForm = () => {
           const token = valueData.data?.createUser;
           if ( token ) {
             login(token);
+            console.log("Successfully logged in", token);
+            props.onSuccess();
+
           } else {
             throw new Error('No token found');
           }

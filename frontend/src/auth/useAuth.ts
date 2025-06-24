@@ -6,12 +6,12 @@ export function useAuth() {
 
   const login = useCallback((token: string) => {
     localStorage.setItem("accessToken", token);
-    client.clearStore();
+    client.resetStore();
   }, [client]);
 
   const logout = useCallback(() => {
     localStorage.removeItem("accessToken");
-    client.clearStore();
+    client.resetStore();
   }, [client]);
 
   const isAuthenticated = useCallback(() => {
