@@ -5,6 +5,7 @@ import App from '@/App'
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, from, fromPromise, Observable } from "@apollo/client";
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
+import { AuthContextProvider } from './auth/context/AuthContext';
 
 const httpLink = createHttpLink({
   uri: '/api/graphql',
@@ -162,7 +163,9 @@ const apolloClient = new ApolloClient({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ApolloProvider client={apolloClient}>
-    <App />
+      <AuthContextProvider>
+        <App />
+      </AuthContextProvider>
     </ApolloProvider>
   </StrictMode>,
 )

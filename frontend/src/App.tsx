@@ -4,7 +4,7 @@ import { HEALTH_CHECK_QUERY, IS_USER_AUTHENTICATED_QUERY } from './App.graphql'
 import { type IsUserAuthenticatedQuery, type HealthCheckQuery, type HealthCheckQueryVariables } from './__generated__/App.graphql'
 import { AuthForm } from '@/auth/AuthForm'
 import { useEffect } from 'react'
-import { useAuth } from './auth/useAuth'
+import { useAuth } from './auth/context/AuthContext'
 
 function App() {
   const { isAuthenticated } = useAuth();
@@ -28,6 +28,10 @@ function App() {
     });
   }
 
+  useEffect( () => {
+    isAuthenticatedQuery();
+  }, [isAuthenticated])
+
   if (loading) {
     return <div>Loading...</div>
   }
@@ -42,7 +46,7 @@ function App() {
 
   return (
     <>
-      {(!isAuthenticated.current) && (
+      {(!isAuthenticated) && (
         <AuthForm onSuccess={handleAuthSuccess} />
       )}
       <div>

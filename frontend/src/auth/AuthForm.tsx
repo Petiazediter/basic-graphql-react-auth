@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Controller, FormProvider, useForm, type SubmitHandler } from 'react-hook-form';
 import { SIGN_IN_MUTATION, SIGN_UP_MUTATION } from './AuthForm.graphql';
 import { type AuthSignInMutation, type AuthSignInMutationVariables, type AuthSignUpMutation, type AuthSignUpMutationVariables } from './__generated__/AuthForm.graphql';
-import { useAuth } from './useAuth';
+import { useAuth } from './context/AuthContext';
 
 type InputForm = {
   email: string;
