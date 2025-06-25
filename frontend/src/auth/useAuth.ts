@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from "react";
 
 export function useAuth() {
   const client = useApolloClient();
-  const isAuthenticated = useRef(false);
+  const isAuthenticated = useRef(!!localStorage.getItem('accessToken'));
 
   useEffect( () => {
     window.addEventListener('accessTokenChanged', handleLocalStorageChange)
@@ -14,8 +14,8 @@ export function useAuth() {
   }, [])
 
   const handleLocalStorageChange = () => {
-    console.log('IAuthenticatedChanged', isAuthenticated.current);
     isAuthenticated.current = !!localStorage.getItem('accessToken');
+    console.log('IAuthenticatedChanged', isAuthenticated.current);
   }
 
   const login = useCallback((token: string) => {
