@@ -39,7 +39,6 @@ const getRefreshToken = async (): Promise<string | null> => {
         })
   
         if ( !response.ok ) {
-          console.log('Response not ok:', response.status, response.statusText);
           removeAccessToken();
           throw new Error("Failed to refresh token");
         }
@@ -94,7 +93,6 @@ const refreshTokenLink = onError(({ graphQLErrors, operation, forward }) => {
             getRefreshToken().then((token) => {
               processQueue(null, token);
               isRefreshing = false;
-
               if ( token ) {
                 const oldHeaders = operation.getContext().headers;
                 setAccessToken(token);
@@ -105,26 +103,26 @@ const refreshTokenLink = onError(({ graphQLErrors, operation, forward }) => {
                   },
                 });
 
-                return forward(operation)
+                const result = forward(operation)
+                setTimeout( () => {
+                  apolloClient.refetchQueries({
+                    include: 'active'
+                  })
+                }, 1000)
+
+                return result;
               } else {
                 removeAccessToken();
-                console.log('token refresh failed');
-                return;
+                return forward(operation)
               }
-              
             }).catch((error) => {
-              console.log('token refresh failed with error', error);
               processQueue(error, null);
               isRefreshing = false;
-
               removeAccessToken();
-              // window.location.href = "/login";
-              return;
+              return forward(operation);
             })
           )
         } else {
-          console.log('token refresh already in progress');
-
           return new Observable((observer) => {
             failedQueue.push({
               resolve: (token) => {
@@ -150,8 +148,6 @@ const refreshTokenLink = onError(({ graphQLErrors, operation, forward }) => {
         }
       }
     })
-  } else {
-    console.log('no graphql errors');
   }
 });
 

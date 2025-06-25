@@ -21,16 +21,8 @@ function App() {
   }, [])
 
   const handleAuthSuccess = () => {
-    console.log('Auth success, refetching authentication status...');
-    // Force a fresh query after authentication
-    isAuthenticatedQuery({ nextFetchPolicy: 'network-only', fetchPolicy: 'network-only', notifyOnNetworkStatusChange: true}).then( (result) =>{
-      console.log('Auth success, refetching authentication status...', result.data);
-    });
-  }
-
-  useEffect( () => {
     isAuthenticatedQuery();
-  }, [isAuthenticated])
+  }
 
   if (loading) {
     return <div>Loading...</div>

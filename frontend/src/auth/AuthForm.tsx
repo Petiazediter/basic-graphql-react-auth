@@ -49,7 +49,6 @@ export const AuthForm = (props: Props) => {
           const token = valueData.data?.login;
           if ( token ) {
             login(token);
-            console.log("Successfully logged in", token);
             props.onSuccess();
           } else {
             throw new Error('No token found');
@@ -79,7 +78,6 @@ export const AuthForm = (props: Props) => {
           const token = valueData.data?.createUser;
           if ( token ) {
             login(token);
-            console.log("Successfully logged in", token);
             props.onSuccess();
 
           } else {
