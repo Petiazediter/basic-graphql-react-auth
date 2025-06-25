@@ -39,13 +39,14 @@ const getRefreshToken = async (): Promise<string | null> => {
   
         if ( !response.ok ) {
           console.log('Response not ok:', response.status, response.statusText);
+          removeAccessToken();
           throw new Error("Failed to refresh token");
         }
 
         const data = await response.json();
         return data.accessToken ?? null;
     } catch (error) {
-        localStorage.removeItem('accessToken');
+        removeAccessToken();
         return null;
     }
 }
@@ -63,9 +64,18 @@ const authLink = setContext((_, { headers }) => {
   }
 });
 
+const setAccessToken = (token: string) => {
+  localStorage.setItem('accessToken', token);
+  window.dispatchEvent(new Event('accessTokenChanged'));
+}
+
+const removeAccessToken = () => {
+  localStorage.removeItem('accessToken');
+  window.dispatchEvent(new Event('accessTokenChanged'));
+}
+
 const refreshTokenLink = onError(({ graphQLErrors, operation, forward }) => {
-  console.log('refreshTokenLink', { graphQLErrors });
-  if ( graphQLErrors ) {
+  if ( graphQLErrors && localStorage.getItem('accessToken') ) {
     graphQLErrors.forEach((error) => {
       if ( error.extensions?.code === "UNAUTHORIZED") {
         // Validation of the access token failed on the backend;
@@ -86,7 +96,7 @@ const refreshTokenLink = onError(({ graphQLErrors, operation, forward }) => {
 
               if ( token ) {
                 const oldHeaders = operation.getContext().headers;
-                localStorage.setItem('accessToken', token);
+                setAccessToken(token);
                 operation.setContext({
                   headers: {
                     ...oldHeaders,
@@ -96,6 +106,7 @@ const refreshTokenLink = onError(({ graphQLErrors, operation, forward }) => {
 
                 return forward(operation)
               } else {
+                removeAccessToken();
                 console.log('token refresh failed');
                 return;
               }
@@ -105,7 +116,7 @@ const refreshTokenLink = onError(({ graphQLErrors, operation, forward }) => {
               processQueue(error, null);
               isRefreshing = false;
 
-              localStorage.removeItem('accessToken');
+              removeAccessToken();
               // window.location.href = "/login";
               return;
             })
@@ -127,6 +138,7 @@ const refreshTokenLink = onError(({ graphQLErrors, operation, forward }) => {
                   forward(operation).subscribe(observer);
                 } else {
                   observer.error(new Error('Token refresh failed'));
+                  removeAccessToken();
                 }
               },
               reject: (error) => {
