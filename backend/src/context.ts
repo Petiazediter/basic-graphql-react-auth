@@ -1,15 +1,33 @@
-import { BaseContext, ContextFunction } from "@apollo/server";
+import { BaseContext } from "@apollo/server";
 import { PrismaClient } from "../generated/prisma"
-import { ExpressContextFunctionArgument } from "@apollo/server/dist/esm/express4";
+import { verifyAccessToken } from "./jwt";
+import { ExpressMiddlewareOptions } from "@as-integrations/express5";
+import express from "express";
 
-export type Context = {
+export interface Context extends BaseContext {
     primsaClient: PrismaClient;
-} & BaseContext;
+    userId?: string;
+    req: express.Request;
+    res: express.Response;
+}
 
 const prismaClientInstance = new PrismaClient();
 
-export const contextFn: ContextFunction<[ExpressContextFunctionArgument], Context> = async () => {
-    return {
-        primsaClient: prismaClientInstance
+export const options: ExpressMiddlewareOptions<Context> = {
+    context: async ({ req, res }) => {
+        const token = req.headers.authorization?.replace("Bearer ", "");
+        let userId: string | undefined;
+        try {
+            userId = token ? verifyAccessToken(token)?.userId : undefined;
+        } catch (error) {
+            console.error('token verification failed', error);
+        }
+
+        return {
+            primsaClient: prismaClientInstance,
+            userId,
+            req,
+            res,
+        }
     }
-} 
+}

@@ -3,22 +3,33 @@ import express from "express";
 import cors from "cors";
 import http from "http";
 import cookieParser from "cookie-parser";
-import { expressMiddleware, ExpressMiddlewareOptions } from "@apollo/server/express4";
+import { expressMiddleware } from "@as-integrations/express5"
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { schema } from "./api";
-import { Context, contextFn } from "./context";
+import { Context, options } from "./context";
+import { refreshTokenPath } from "./api/refreshTokenRoute";
 
 const prismaClientInstance = new PrismaClient();
 
 async function main() {
     const app = express();
+    // Health check endpoint
+    app.get('/health', (req, res) => {
+        res.status(200).json({ status: 'healthy' });
+    });
+    
     const httpServer = http.createServer(app);
 
     app.use(cors({
-      origin: "http://localhost:3000",
+      origin: process.env.FRONTEND_URL || "http://localhost:3000",
       credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
     }));
+
+    app.use(cookieParser());
+    app.use(express.json());
 
     const server = new ApolloServer<Context>({
         schema,
@@ -26,22 +37,23 @@ async function main() {
     });
   
     await server.start();
-  
-    const middleware: Required<Pick<ExpressMiddlewareOptions<Context>, "context">> = {
-        context: contextFn
-    };
 
     app.use(
         '/graphql',
-        cors<cors.CorsRequest>(),
-        cookieParser(),
-        express.json(),
-        // @ts-ignore-next-line
-        expressMiddleware(server, middleware)
+        cors<cors.CorsRequest>({
+            origin: process.env.FRONTEND_URL || "http://localhost:3000",
+            credentials: true,
+        }),
+        expressMiddleware<Context>(server, {
+            context: options.context!,
+        })
     )
 
-    await new Promise<void>(resolve => httpServer.listen({ port: 4000 }, resolve));
-    console.log(`🚀  Server ready at: http://localhost:4000/graphql`);
+    app.post('/refresh-token', refreshTokenPath);
+
+    const port = process.env.PORT || 4000;
+    await new Promise<void>(resolve => httpServer.listen({ port }, resolve));
+    console.log(`🚀  Server ready at: http://localhost:${port}/graphql`);
 }
 
 main().then( 
