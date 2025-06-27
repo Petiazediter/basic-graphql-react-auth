@@ -24,7 +24,12 @@ async function main() {
     app.use(cors({
       origin: process.env.FRONTEND_URL || "http://localhost:3000",
       credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
     }));
+
+    app.use(cookieParser());
+    app.use(express.json());
 
     const server = new ApolloServer<Context>({
         schema,
@@ -35,9 +40,10 @@ async function main() {
 
     app.use(
         '/graphql',
-        cors<cors.CorsRequest>(),
-        cookieParser(),
-        express.json(),
+        cors<cors.CorsRequest>({
+            origin: process.env.FRONTEND_URL || "http://localhost:3000",
+            credentials: true,
+        }),
         expressMiddleware<Context>(server, {
             context: options.context!,
         })

@@ -17,14 +17,12 @@ export const signAccessToken = (payload: JWTToken, res: express.Response): strin
         throw new Error("Failed to sign JWT header");
     }
 
-    const isProduction = process.env.NODE_ENV === 'production';
-    const sameSite = isProduction ? 'Strict' : 'None';
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION_TIME });
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRATION_TIME });
-    res.setHeader("Set-Cookie", [
-        `jid=${refreshToken}; HttpOnly; Path=/refresh-token; SameSite=${sameSite}; Secure;`
-    ]);
+    
+    let cookieString = `jid=${refreshToken}; HttpOnly; Path=/; Domain=localhost`;
+    res.setHeader("Set-Cookie", cookieString);
     return `Bearer ${token}`;
 }
 
@@ -45,6 +43,10 @@ export const verifyRefreshToken = (token: string): JWTToken | null => {
     if ( !process.env.REFRESH_TOKEN_SECRET ) {
         throw new Error("Failed to verify refresh token");
     }
+
+    console.log('=== VERIFY REFRESH TOKEN DEBUG ===');
+    console.log('Token:', token);
+    console.log('==========================');
 
     const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
     if ( isJWTToken(decoded) ) {

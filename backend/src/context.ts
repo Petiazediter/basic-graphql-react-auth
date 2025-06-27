@@ -20,7 +20,7 @@ export const options: ExpressMiddlewareOptions<Context> = {
         try {
             userId = token ? verifyAccessToken(token)?.userId : undefined;
         } catch (error) {
-            console.error(error);
+            console.error('token verification failed', error);
         }
 
         return {
