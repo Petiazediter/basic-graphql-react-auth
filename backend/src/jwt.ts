@@ -49,8 +49,9 @@ export const verifyRefreshToken = (token: string): JWTToken | null => {
     }
     
     const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-    if ( isJWTToken(decoded) ) {
-        return decoded;
+    if ( !isJWTToken(decoded) ) {
+        return null;
     }
-    return null;
+
+    return decoded; 
 }

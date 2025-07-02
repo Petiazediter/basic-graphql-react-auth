@@ -1,6 +1,7 @@
 import { parse } from "cookie";
 import { RequestHandler } from "express";
 import { JWTToken, signAccessToken, verifyRefreshToken } from "../jwt";
+import _ from "lodash";
 
 export const refreshTokenPath: RequestHandler = async (req, res) => {
   let cookies = {}
@@ -17,8 +18,8 @@ export const refreshTokenPath: RequestHandler = async (req, res) => {
   try {
     const verifiedPayload: JWTToken | null = verifyRefreshToken(refreshToken as string);
     if ( verifiedPayload ) {
-      // TODO: check if userId is valid, refresh token is valid etc..
-      const newAccessToken = signAccessToken(verifiedPayload, res);
+      const strippedPayload = _.omit(verifiedPayload, ['iat', 'exp']) as JWTToken;
+      const newAccessToken = signAccessToken(strippedPayload, res);
       res.status(200).json({ accessToken: newAccessToken });
     } else {
       res.status(403).json({ error: "Invalid refresh token" });
