@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import express from "express";
 
-export const ACCESS_TOKEN_EXPIRATION_TIME = "10s";
+export const ACCESS_TOKEN_EXPIRATION_TIME = "10m";
 export const REFRESH_TOKEN_EXPIRATION_TIME = "1h";
 
 export type JWTToken = {
