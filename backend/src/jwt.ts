@@ -1,15 +1,18 @@
 import jwt from "jsonwebtoken";
 import express from "express";
+import zod from "zod";
 
 export const ACCESS_TOKEN_EXPIRATION_TIME = "10m";
 export const REFRESH_TOKEN_EXPIRATION_TIME = "1h";
 
-export type JWTToken = {
-    userId: string;
-}
+const JWTTokenSchema = zod.object({
+    userId: zod.string(),
+})
+
+export type JWTToken = zod.infer<typeof JWTTokenSchema>;
 
 const isJWTToken = (token: any): token is JWTToken => {
-    return typeof token === "object" && token !== null && "userId" in token;
+    return JWTTokenSchema.safeParse(token).success;
 }
 
 export const signAccessToken = (payload: JWTToken, res: express.Response): string => {
