@@ -15,15 +15,11 @@ export const refreshTokenPath: RequestHandler = async (req, res) => {
   }
 
   try {
-    const verifiedPayload = verifyRefreshToken(refreshToken as string);
+    const verifiedPayload: JWTToken | null = verifyRefreshToken(refreshToken as string);
     if ( verifiedPayload ) {
       // TODO: check if userId is valid, refresh token is valid etc..
-      const payloadToSend: JWTToken = {
-        userId: verifiedPayload.userId,
-      }
-      const newAccessToken = signAccessToken(payloadToSend, res);
+      const newAccessToken = signAccessToken(verifiedPayload, res);
       res.status(200).json({ accessToken: newAccessToken });
-      // res.end(JSON.stringify({ accessToken: newAccessToken }));
     } else {
       res.status(403).json({ error: "Invalid refresh token" });
     }

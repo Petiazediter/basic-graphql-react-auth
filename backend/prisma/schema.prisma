@@ -19,6 +19,13 @@ datasource db {
 // Staff members are part of 1 or more organizations. ( many to many )
 // Staff members have a role in the organization.
 
+enum ApplicationAccessLevel {
+  USER
+  ADMIN
+  SUPER_ADMIN
+  GUEST
+}
+
 model User {
   id        String   @id @default(uuid())
 
@@ -29,6 +36,7 @@ model User {
   // Staff fields
   organizations UserOrganization[]
   
+  applicationAccessLevel ApplicationAccessLevel @default(USER)
   // Audit fields 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
