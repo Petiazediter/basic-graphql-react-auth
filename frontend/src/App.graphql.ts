@@ -11,3 +11,9 @@ export const IS_USER_AUTHENTICATED_QUERY = gql`
     isUserAuthenticated
   }
 `
+
+export const CHECK_MY_ROLE_AGAINST_QUERY = gql`
+  query CheckMyRoleAgainst($role: ApplicationAccessLevel!, $isExact: Boolean!) {
+    checkMyRoleAgainst(role: $role, isExact: $isExact)
+  }
+`

@@ -1,22 +1,26 @@
 import jwt from "jsonwebtoken";
 import express from "express";
+import zod from "zod";
+import { ApplicationAccessLevel } from "../generated/prisma";
 
-export const ACCESS_TOKEN_EXPIRATION_TIME = "10m";
-export const REFRESH_TOKEN_EXPIRATION_TIME = "1h";
+export const ACCESS_TOKEN_EXPIRATION_TIME = 600;
+export const REFRESH_TOKEN_EXPIRATION_TIME = "30m";
 
-export type JWTToken = {
-    userId: string;
-}
+const JWTTokenSchema = zod.object({
+    userId: zod.string(),
+    applicationAccessLevel: zod.nativeEnum(ApplicationAccessLevel),
+})
+
+export type JWTToken = zod.infer<typeof JWTTokenSchema>;
 
 const isJWTToken = (token: any): token is JWTToken => {
-    return typeof token === "object" && token !== null && "userId" in token;
+    return JWTTokenSchema.safeParse(token).success;
 }
 
 export const signAccessToken = (payload: JWTToken, res: express.Response): string => {
     if ( !process.env.JWT_SECRET || !process.env.REFRESH_TOKEN_SECRET ) {
         throw new Error("Failed to sign JWT header");
     }
-
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRATION_TIME });
     const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRATION_TIME });
@@ -43,14 +47,11 @@ export const verifyRefreshToken = (token: string): JWTToken | null => {
     if ( !process.env.REFRESH_TOKEN_SECRET ) {
         throw new Error("Failed to verify refresh token");
     }
-
-    console.log('=== VERIFY REFRESH TOKEN DEBUG ===');
-    console.log('Token:', token);
-    console.log('==========================');
-
+    
     const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-    if ( isJWTToken(decoded) ) {
-        return decoded;
+    if ( !isJWTToken(decoded) ) {
+        return null;
     }
-    return null;
+
+    return decoded; 
 }

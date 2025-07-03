@@ -1,10 +1,14 @@
 import { Resolvers } from "@generated/graphql";
-import { UserRoleInOrganization } from "../../generated/prisma";
+import { ApplicationAccessLevel, UserRoleInOrganization } from "../../generated/prisma";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import { signAccessToken } from "../jwt";
 
 export const typeDef = `
+    enum ApplicationAccessLevel {
+      ${Object.values(ApplicationAccessLevel).join("\n")}
+    }
+
     extend type Query { 
         ok: Boolean
     }
@@ -79,6 +83,7 @@ export const resolvers: Resolvers = {
         data: {
           email,
           password: hashedPassword,
+          applicationAccessLevel: ApplicationAccessLevel.USER,
           ...(userOrganization ? ({
             organizations: {
               create: {
@@ -91,7 +96,7 @@ export const resolvers: Resolvers = {
       })
 
       if ( createdUser ) {
-        const token = signAccessToken({ userId: createdUser.id }, ctx.res);
+        const token = signAccessToken({ userId: createdUser.id, applicationAccessLevel: createdUser.applicationAccessLevel }, ctx.res);
         return token;
       }
 
@@ -107,6 +112,7 @@ export const resolvers: Resolvers = {
         select: {
           id: true,
           password: true,
+          applicationAccessLevel: true,
         }
       })
 
@@ -121,7 +127,10 @@ export const resolvers: Resolvers = {
         throw new Error("User not found");
       }
 
-      const token = signAccessToken({ userId: user.id }, ctx.res);
+      const token = signAccessToken({ 
+        userId: user.id,
+        applicationAccessLevel: user.applicationAccessLevel,
+      }, ctx.res);
       return token;
     }
   }
