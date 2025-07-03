@@ -3,8 +3,8 @@ import express from "express";
 import zod from "zod";
 import { ApplicationAccessLevel } from "../generated/prisma";
 
-export const ACCESS_TOKEN_EXPIRATION_TIME = "10m";
-export const REFRESH_TOKEN_EXPIRATION_TIME = "1h";
+export const ACCESS_TOKEN_EXPIRATION_TIME = 600;
+export const REFRESH_TOKEN_EXPIRATION_TIME = "30m";
 
 const JWTTokenSchema = zod.object({
     userId: zod.string(),
