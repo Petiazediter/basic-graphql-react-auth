@@ -5,6 +5,10 @@ import validator from "validator";
 import { signAccessToken } from "../jwt";
 
 export const typeDef = `
+    enum ApplicationAccessLevel {
+      ${Object.values(ApplicationAccessLevel).join("\n")}
+    }
+
     extend type Query { 
         ok: Boolean
     }
