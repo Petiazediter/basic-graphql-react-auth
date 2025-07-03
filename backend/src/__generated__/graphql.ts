@@ -17,6 +17,13 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export enum ApplicationAccessLevel {
+  Admin = 'ADMIN',
+  Guest = 'GUEST',
+  SuperAdmin = 'SUPER_ADMIN',
+  User = 'USER'
+}
+
 export type CreateUserInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -47,8 +54,15 @@ export type MutationLoginArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  checkMyRoleAgainst?: Maybe<Scalars['Boolean']['output']>;
   isUserAuthenticated?: Maybe<Scalars['Boolean']['output']>;
   ok?: Maybe<Scalars['Boolean']['output']>;
+};
+
+
+export type QueryCheckMyRoleAgainstArgs = {
+  isExact: Scalars['Boolean']['input'];
+  role: ApplicationAccessLevel;
 };
 
 export type UserOrganizationInput = {
@@ -133,6 +147,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  ApplicationAccessLevel: ApplicationAccessLevel;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CreateUserInput: CreateUserInput;
   LoginInput: LoginInput;
@@ -161,6 +176,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
 }>;
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  checkMyRoleAgainst?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<QueryCheckMyRoleAgainstArgs, 'isExact' | 'role'>>;
   isUserAuthenticated?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   ok?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
 }>;
