@@ -1,5 +1,5 @@
 import { BaseContext } from "@apollo/server";
-import { PrismaClient } from "../generated/prisma"
+import { PrismaClient } from "@generated/prisma/client"
 import { JWTToken, verifyAccessToken } from "./jwt";
 import { ExpressMiddlewareOptions } from "@as-integrations/express5";
 import express from "express";

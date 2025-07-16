@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import express from "express";
 import zod from "zod";
-import { ApplicationAccessLevel } from "../generated/prisma";
+import { ApplicationAccessLevel } from "@generated/prisma/client"
 
 export const ACCESS_TOKEN_EXPIRATION_TIME = 600;
 export const REFRESH_TOKEN_EXPIRATION_TIME = "30m";

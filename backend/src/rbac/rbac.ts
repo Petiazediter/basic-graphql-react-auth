@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { ApplicationAccessLevel, PrismaClient } from "../../generated/prisma";
+import { ApplicationAccessLevel, PrismaClient } from "@generated/prisma/client";
 import { JWTToken } from "../jwt";
 
 class RBAC {
