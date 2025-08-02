@@ -6,10 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "frontend:dev": "pnpm --filter frontend dev",
+    "frontend:codegen": "pnpm --filter frontend codegen",
+    "frontend:build": "pnpm --filter frontend build",
+    "frontend:start": "pnpm --filter frontend start",
     "backend:dev": "pnpm --filter backend dev",
     "backend:codegen": "pnpm --filter backend codegen",
     "backend:no-check": "pnpm --filter backend dev:no-check",
-    "frontend:codegen": "pnpm --filter frontend codegen"
+    "backend:build": "pnpm --filter backend build",
+    "backend:start": "pnpm --filter backend start"
   },
   "keywords": [],
   "author": "",

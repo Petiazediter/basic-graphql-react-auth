@@ -13,8 +13,7 @@ export const resolvers: Resolvers = {
   Query: {
     ok: () => true,
     isUserAuthenticated: async (_parent, _args, ctx) => {
-      ctx.rbac.app().user().ensure();
-      return true;
+      return ctx.rbac.app().user().view();
     },
     checkMyRoleAgainst: async (_parent, args, ctx) => {
       switch (args.role) {
