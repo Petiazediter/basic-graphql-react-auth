@@ -1,5 +1,5 @@
 import { Resolvers } from "@generated/graphql";
-import { ApplicationAccessLevel, UserRoleInOrganization } from "../../generated/prisma";
+import { ApplicationAccessLevel, UserRoleInOrganization } from "@generated/prisma/client"
 import bcrypt from "bcrypt";
 import validator from "validator";
 import { signAccessToken } from "../jwt";

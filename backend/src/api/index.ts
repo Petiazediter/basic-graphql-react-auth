@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const files = fs.readdirSync(__dirname)
-    .filter((file) => file.endsWith(".graphql.ts"))
+    .filter((file) => file.endsWith(".graphql.ts") || file.endsWith(".graphql.js") /* Js for dist build */)
 
 const modules = await Promise.all(
     files.map(async (file) => {
